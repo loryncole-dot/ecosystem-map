@@ -4,194 +4,251 @@
 <meta charset="UTF-8">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
-<!-- v2.3 -->
+<!-- v2.4 — Niche brand -->
 <title>Enrollment Ecosystem Map</title>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Oswald:wght@500;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
+  /* ======================================================
+     Niche brand tokens
+     ====================================================== */
+  :root {
+    --niche-white: #FFFFFF;
+    --niche-cream: #F3E9E3;
+    --niche-cream-soft: #FAF4F0;
+    --niche-cream-edge: #E5DCD5;
+    --niche-dark-green: #003024;
+    --niche-dark-green-soft: #1A4A3E;
+    --niche-bright-green: #00BE76;
+    --niche-medium-green: #016853;
+    --niche-amber: #FF9B00;
+    --niche-copper: #A97332;
+    --niche-pink: #FF90E7;
+    --niche-periwinkle: #8CA6FF;
+    --niche-red-orange: #FF5B00;
+
+    /* Tints used for soft fills (maturity chips, quote cards, highlights) */
+    --niche-amber-tint: #FFE9C7;
+    --niche-bright-green-tint: #C8F1DD;
+    --niche-periwinkle-tint: #DEE5FF;
+    --niche-pink-tint: #FFE0F8;
+
+    --niche-font-display: "Fraunces", Georgia, serif;
+    --niche-font-section: "Oswald", "Arial Narrow", sans-serif;
+    --niche-font-body:    "Source Sans 3", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #2a2a2a; background: #f7f8fa; }
+  html, body { height: 100%; font-family: var(--niche-font-body); color: var(--niche-dark-green); background: var(--niche-cream); }
   #app { display: grid; grid-template-columns: 280px 1fr 380px; grid-template-rows: 56px 1fr; height: 100vh; }
   header {
     grid-column: 1 / -1;
     display: flex; align-items: center; justify-content: space-between;
     padding: 0 20px;
-    background: white; border-bottom: 1px solid #e4e6ea;
+    background: var(--niche-white); border-bottom: 1px solid var(--niche-cream-edge);
     z-index: 5;
   }
-  header h1 { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
-  header .subtitle { font-size: 12px; color: #6b7280; margin-left: 12px; }
+  header h1 {
+    font-family: var(--niche-font-display);
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+    color: var(--niche-dark-green);
+  }
+  header .subtitle {
+    font-family: var(--niche-font-section); text-transform: uppercase;
+    font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
+    color: var(--niche-medium-green); margin-left: 14px;
+  }
   header .search { display: flex; align-items: center; gap: 8px; }
   header .search input {
-    border: 1px solid #d1d5db; border-radius: 6px; padding: 6px 10px; font-size: 13px;
-    width: 220px; outline: none;
+    font-family: var(--niche-font-body);
+    border: 1px solid var(--niche-cream-edge); border-radius: 6px; padding: 6px 10px; font-size: 13px;
+    width: 220px; outline: none; color: var(--niche-dark-green); background: var(--niche-white);
   }
-  header .search input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+  header .search input:focus { border-color: var(--niche-bright-green); box-shadow: 0 0 0 3px rgba(0,190,118,0.18); }
   aside.controls {
-    background: white; border-right: 1px solid #e4e6ea;
+    background: var(--niche-white); border-right: 1px solid var(--niche-cream-edge);
     padding: 18px 16px; overflow-y: auto;
   }
   aside.details {
-    background: white; border-left: 1px solid #e4e6ea;
+    background: var(--niche-white); border-left: 1px solid var(--niche-cream-edge);
     padding: 18px 16px; overflow-y: auto;
   }
   .control-group { margin-bottom: 22px; }
   .control-group h3 {
-    font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
-    text-transform: uppercase; color: #6b7280; margin-bottom: 10px;
+    font-family: var(--niche-font-section);
+    font-size: 13px; font-weight: 600; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--niche-medium-green); margin-bottom: 10px;
   }
   .segmented {
-    display: flex; border: 1px solid #d1d5db; border-radius: 8px; overflow: hidden;
-    background: #f3f4f6;
+    display: flex; border: 1px solid var(--niche-cream-edge); border-radius: 8px; overflow: hidden;
+    background: var(--niche-cream-soft);
   }
   .segmented button {
+    font-family: var(--niche-font-section); text-transform: uppercase; letter-spacing: 0.06em;
     flex: 1; padding: 7px 8px; font-size: 12px; border: none; background: transparent;
-    cursor: pointer; color: #4b5563; font-weight: 500;
+    cursor: pointer; color: var(--niche-medium-green); font-weight: 600;
     transition: background 0.15s, color 0.15s;
   }
-  .segmented button:hover { background: #e5e7eb; }
-  /* Low=amber, Medium=green, High=blue — matching quote card colors */
-  .segmented button[data-maturity="low"].active  { background: #fef3c7; color: #92400e; }
-  .segmented button[data-maturity="medium"].active { background: #d1fae5; color: #065f46; }
-  .segmented button[data-maturity="high"].active  { background: #dbeafe; color: #1e40af; }
+  .segmented button:hover { background: var(--niche-cream); }
+  /* Low=amber, Medium=bright green, High=periwinkle — Niche accents */
+  .segmented button[data-maturity="low"].active   { background: var(--niche-amber-tint);         color: var(--niche-dark-green); }
+  .segmented button[data-maturity="medium"].active{ background: var(--niche-bright-green-tint);  color: var(--niche-dark-green); }
+  .segmented button[data-maturity="high"].active  { background: var(--niche-periwinkle-tint);    color: var(--niche-dark-green); }
   .maturity-desc {
-    margin-top: 10px; font-size: 12px; color: #4b5563; line-height: 1.5;
-    background: #f9fafb; padding: 10px 12px; border-radius: 6px; border: 1px solid #e5e7eb;
+    margin-top: 10px; font-size: 12px; color: var(--niche-dark-green); line-height: 1.5;
+    background: var(--niche-cream); padding: 10px 12px; border-radius: 6px; border: 1px solid var(--niche-cream-edge);
   }
   .filter-row {
     display: flex; align-items: center; gap: 8px;
     padding: 7px 8px; border-radius: 6px; cursor: pointer;
-    font-size: 13px;
+    font-size: 13px; color: var(--niche-dark-green);
   }
-  .filter-row:hover { background: #f3f4f6; }
+  .filter-row:hover { background: var(--niche-cream-soft); }
   .filter-row .swatch {
     width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid transparent;
   }
-  .filter-row input { accent-color: #4f46e5; }
+  .filter-row input { accent-color: var(--niche-bright-green); }
   .ring-row { cursor: pointer; }
-  .ring-row input[type="radio"] { accent-color: #4f46e5; cursor: pointer; }
-  .legend-line { display: flex; align-items: center; gap: 10px; font-size: 12px; padding: 4px 0; }
-  .legend-line .line-sample { width: 36px; height: 2px; background: #9ca3af; }
-  .legend-line .line-sample.dashed { background: repeating-linear-gradient(to right, #9ca3af 0 4px, transparent 4px 8px); height: 2px; }
-  .legend-line .line-sample.dotted { background: repeating-linear-gradient(to right, #9ca3af 0 2px, transparent 2px 5px); height: 2px; }
+  .ring-row input[type="radio"] { accent-color: var(--niche-bright-green); cursor: pointer; }
+  .legend-line { display: flex; align-items: center; gap: 10px; font-size: 12px; padding: 4px 0; color: var(--niche-dark-green); }
+  .legend-line .line-sample { width: 36px; height: 2px; background: var(--niche-medium-green); }
+  .legend-line .line-sample.dashed { background: repeating-linear-gradient(to right, var(--niche-medium-green) 0 4px, transparent 4px 8px); height: 2px; }
+  .legend-line .line-sample.dotted { background: repeating-linear-gradient(to right, var(--niche-medium-green) 0 2px, transparent 2px 5px); height: 2px; }
   main.viz {
-    position: relative; overflow: hidden; background: #f7f8fa;
+    position: relative; overflow: hidden; background: var(--niche-cream);
   }
   #viz { width: 100%; height: 100%; display: block; cursor: grab; }
   #viz:active { cursor: grabbing; }
   .zoom-controls {
     position: absolute; top: 16px; right: 16px;
     display: flex; flex-direction: column; gap: 4px;
-    background: white; border: 1px solid #e4e6ea; border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    background: var(--niche-white); border: 1px solid var(--niche-cream-edge); border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,48,36,0.08);
     overflow: hidden;
   }
   .zoom-controls button {
-    width: 36px; height: 36px; border: none; background: white;
-    font-size: 16px; cursor: pointer; color: #4b5563;
-    border-bottom: 1px solid #e4e6ea;
+    width: 36px; height: 36px; border: none; background: var(--niche-white);
+    font-size: 16px; cursor: pointer; color: var(--niche-dark-green);
+    border-bottom: 1px solid var(--niche-cream-edge);
   }
   .zoom-controls button:last-child { border-bottom: none; }
-  .zoom-controls button:hover { background: #f3f4f6; }
+  .zoom-controls button:hover { background: var(--niche-cream-soft); }
   .tooltip {
     position: absolute; pointer-events: none;
-    background: #1f2937; color: white; font-size: 12px;
+    font-family: var(--niche-font-body);
+    background: var(--niche-dark-green); color: var(--niche-cream); font-size: 12px;
     padding: 6px 10px; border-radius: 5px; z-index: 10;
     opacity: 0; transition: opacity 0.15s;
-    max-width: 220px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    max-width: 220px; box-shadow: 0 2px 8px rgba(0,48,36,0.25);
   }
   .tooltip.visible { opacity: 1; }
   .stage-btn {
-    width: 100%; padding: 8px 10px; border: 1px solid #e4e6ea; border-radius: 6px;
-    background: white; font-size: 12px; color: #4b5563; cursor: pointer;
+    font-family: var(--niche-font-body);
+    width: 100%; padding: 8px 10px; border: 1px solid var(--niche-cream-edge); border-radius: 6px;
+    background: var(--niche-white); font-size: 12px; color: var(--niche-dark-green); cursor: pointer;
     text-align: left; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;
   }
-  .stage-btn:hover { background: #f3f4f6; }
-  .stage-btn.active { background: #f3f4f6; border-color: #9ca3af; color: #111827; font-weight: 500; }
+  .stage-btn:hover { background: var(--niche-cream-soft); }
+  .stage-btn.active { background: var(--niche-cream); border-color: var(--niche-medium-green); color: var(--niche-dark-green); font-weight: 600; }
   .stage-btn .dot { display: none; }
-  .details-card { font-size: 13px; color: #4b5563; line-height: 1.5; }
+  .details-card { font-size: 13px; color: var(--niche-dark-green); line-height: 1.5; }
   .details-card h2 {
-    font-size: 15px; color: #111827; margin-bottom: 4px;
+    font-family: var(--niche-font-display);
+    font-size: 20px; font-weight: 600; color: var(--niche-dark-green); margin-bottom: 4px;
+    letter-spacing: -0.01em;
   }
   .details-card .meta {
-    font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em;
-    color: #6b7280; margin-bottom: 14px;
+    font-family: var(--niche-font-section);
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--niche-medium-green); margin-bottom: 14px; font-weight: 500;
   }
   .details-card .section-title {
-    font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
-    text-transform: uppercase; color: #6b7280;
+    font-family: var(--niche-font-section);
+    font-size: 12px; font-weight: 600; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--niche-medium-green);
     margin-top: 14px; margin-bottom: 6px;
   }
   .details-card ul { list-style: none; }
   .details-card ul li {
-    padding: 5px 0; font-size: 13px; border-bottom: 1px solid #f3f4f6;
-    gap: 4px;
+    padding: 5px 0; font-size: 13px; border-bottom: 1px solid var(--niche-cream);
+    gap: 4px; color: var(--niche-dark-green);
   }
-  .details-card ul li .edge-label { font-size: 11px; color: #6b7280; font-style: italic; }
-  .empty-state { color: #9ca3af; font-size: 13px; font-style: italic; }
+  .details-card ul li .edge-label { font-size: 11px; color: var(--niche-medium-green); font-style: italic; }
+  .empty-state { color: var(--niche-medium-green); font-size: 13px; font-style: italic; }
   /* Description text - no box */
   .node-description {
-    font-size: 13px; color: #374151; line-height: 1.6;
+    font-size: 13px; color: var(--niche-dark-green); line-height: 1.6;
     margin-bottom: 2px;
   }
-  /* Quote cards */
+  /* Quote cards — Niche accent palette */
   .quote-card {
     margin-top: 8px; border-radius: 6px; padding: 10px 12px;
     border-left: 3px solid;
-    font-size: 12px; line-height: 1.6; color: #374151;
+    font-size: 12px; line-height: 1.6; color: var(--niche-dark-green);
     font-style: italic;
   }
-  .quote-card.low  { background: #fef3c7; border-color: #f59e0b; }
-  .quote-card.medium { background: #ecfdf5; border-color: #10b981; }
-  .quote-card.high { background: #eff6ff; border-color: #3b82f6; }
+  .quote-card.low    { background: var(--niche-amber-tint);        border-color: var(--niche-amber); }
+  .quote-card.medium { background: var(--niche-bright-green-tint); border-color: var(--niche-bright-green); }
+  .quote-card.high   { background: var(--niche-periwinkle-tint);   border-color: var(--niche-periwinkle); }
   .quote-tag { display: none; }
   .quote-text { white-space: pre-wrap; }
   /* Expandable connections */
   .conn-toggle {
     display: flex; align-items: center; justify-content: space-between;
     cursor: pointer; user-select: none;
-    font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
-    text-transform: uppercase; color: #6b7280;
+    font-family: var(--niche-font-section);
+    font-size: 12px; font-weight: 600; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--niche-medium-green);
     margin-top: 14px; margin-bottom: 0; padding: 4px 0;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid var(--niche-cream);
   }
-  .conn-toggle:hover { color: #374151; }
+  .conn-toggle:hover { color: var(--niche-dark-green); }
   .conn-toggle .caret { font-size: 10px; transition: transform 0.2s; }
   .conn-toggle.open .caret { transform: rotate(90deg); }
   .conn-list { display: none; }
   .conn-list.open { display: block; }
   .reset-btn {
-    width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px;
-    background: white; font-size: 12px; color: #4b5563; cursor: pointer; font-weight: 500;
+    font-family: var(--niche-font-section); text-transform: uppercase; letter-spacing: 0.06em;
+    width: 100%; padding: 8px 12px; border: 1px solid var(--niche-bright-green); border-radius: 6px;
+    background: var(--niche-bright-green); font-size: 12px; color: var(--niche-white); cursor: pointer; font-weight: 600;
   }
-  .reset-btn:hover { background: #f3f4f6; }
-  /* SVG styling */
-  .ring-bg { fill-opacity: 1; stroke: #9ca3af; stroke-width: 6; }
-  .ring-bg.highlight { stroke: #4f46e5; stroke-width: 14; fill: #eef2ff; fill-opacity: 1; }
+  .reset-btn:hover { background: var(--niche-medium-green); border-color: var(--niche-medium-green); }
+  /* SVG styling — Niche brand */
+  .ring-bg { fill-opacity: 1; stroke: var(--niche-medium-green); stroke-width: 6; }
+  .ring-bg.highlight { stroke: var(--niche-bright-green); stroke-width: 14; fill: var(--niche-bright-green-tint); fill-opacity: 1; }
   .ring-bg.dim { fill-opacity: 0.4; }
-  .ring-label { fill: #4b5563; font-size: 68px; font-weight: 700; letter-spacing: 0.02em; }
+  .ring-label {
+    font-family: var(--niche-font-section); text-transform: uppercase;
+    fill: var(--niche-medium-green); font-size: 115px; font-weight: 600; letter-spacing: 0.08em;
+    paint-order: stroke; stroke: var(--niche-cream); stroke-width: 8; stroke-linejoin: round;
+  }
   .quadrant-label {
-    fill: #111827; font-size: 120px; font-weight: 800; letter-spacing: -0.01em;
+    font-family: var(--niche-font-display);
+    fill: var(--niche-dark-green); font-size: 120px; font-weight: 700; letter-spacing: -0.01em;
     cursor: pointer; opacity: 1;
-    paint-order: stroke; stroke: #ffffff; stroke-width: 6; stroke-linejoin: round;
+    paint-order: stroke; stroke: var(--niche-cream); stroke-width: 6; stroke-linejoin: round;
     transition: opacity 0.15s;
   }
   .quadrant-label:hover { opacity: 0.75; }
-  .quadrant-label.active { paint-order: stroke; stroke: #ffffff; stroke-width: 10; }
-  .journey-arc { fill: none; stroke: #c7d2fe; stroke-width: 8; opacity: 0.6; }
-  .journey-arrow { fill: #818cf8; opacity: 0.6; }
+  .quadrant-label.active { paint-order: stroke; stroke: var(--niche-cream); stroke-width: 10; }
+  .journey-arc  { fill: none; stroke: var(--niche-periwinkle); stroke-width: 8; opacity: 0.6; }
+  .journey-arrow { fill: var(--niche-periwinkle); opacity: 0.7; }
   .node circle {
-    stroke: white; stroke-width: 5; cursor: pointer;
+    stroke: var(--niche-white); stroke-width: 5; cursor: pointer;
     transition: stroke-width 0.15s, r 0.15s, filter 0.15s;
   }
-  .node circle:hover { stroke: #111827; stroke-width: 7; }
-  .node.highlight circle { stroke: #4f46e5; stroke-width: 9; filter: drop-shadow(0 4px 14px rgba(79,70,229,0.5)); }
+  .node circle:hover { stroke: var(--niche-dark-green); stroke-width: 7; }
+  .node.highlight circle { stroke: var(--niche-bright-green); stroke-width: 9; filter: drop-shadow(0 4px 14px rgba(0,190,118,0.55)); }
   .node.dim { opacity: 0.15; }
   .node.hidden { display: none; }
   .node text {
-    font-size: 30px; pointer-events: none; fill: #1f2937;
+    font-family: var(--niche-font-body);
+    font-size: 30px; pointer-events: none; fill: var(--niche-dark-green);
     text-anchor: middle; font-weight: 600; letter-spacing: -0.01em;
   }
-  .node.highlight text { fill: #111827; font-weight: 700; }
+  .node.highlight text { fill: var(--niche-dark-green); font-weight: 700; }
   .edge {
     fill: none; opacity: 0.35;
     transition: opacity 0.15s, stroke-width 0.15s;
@@ -206,10 +263,11 @@
   .edge.dim { opacity: 0.04; }
   .edge.hidden { display: none; }
   .edge-label {
-    font-size: 26px; fill: #111827; pointer-events: none; opacity: 0;
+    font-family: var(--niche-font-body);
+    font-size: 26px; fill: var(--niche-dark-green); pointer-events: none; opacity: 0;
     transition: opacity 0.15s;
     text-anchor: middle; font-weight: 600;
-    paint-order: stroke; stroke: #ffffff; stroke-width: 8; stroke-linejoin: round;
+    paint-order: stroke; stroke: var(--niche-cream); stroke-width: 8; stroke-linejoin: round;
   }
   .edge-label.visible { opacity: 1; }
   .stage-highlight {
@@ -218,29 +276,29 @@
   .ribbon-path {
     cursor: pointer;
     transition: fill-opacity 0.2s, stroke-width 0.2s;
-    stroke: #1d4ed8; stroke-width: 3;
+    stroke: var(--niche-medium-green); stroke-width: 3;
   }
   .ribbon-path:hover { fill-opacity: 0.65 !important; stroke-width: 6; }
-  .ribbon-path.highlight { fill-opacity: 0.7 !important; stroke-width: 8; filter: drop-shadow(0 4px 14px rgba(30,64,175,0.45)); }
+  .ribbon-path.highlight { fill-opacity: 0.7 !important; stroke-width: 8; filter: drop-shadow(0 4px 14px rgba(1,104,83,0.45)); }
   .ribbon-path.dim { fill-opacity: 0.08 !important; }
   .ribbon-label {
-    font-size: 40px; font-weight: 800; fill: #1e3a8a;
-    letter-spacing: 0.01em; pointer-events: none;
-    paint-order: stroke; stroke: #ffffff; stroke-width: 4; stroke-linejoin: round;
+    font-family: var(--niche-font-display);
+    font-size: 76px; font-weight: 600; fill: var(--niche-dark-green);
+    font-style: italic; letter-spacing: 0.01em; pointer-events: none;
   }
   .ribbon-sublabel {
-    font-size: 22px; font-weight: 500; fill: #1d4ed8;
-    pointer-events: none; opacity: 0.9;
-    paint-order: stroke; stroke: #ffffff; stroke-width: 3; stroke-linejoin: round;
+    font-family: var(--niche-font-body);
+    font-size: 26px; font-weight: 600; fill: var(--niche-dark-green);
+    pointer-events: none;
   }
   .ribbon-cycle-label {
-    font-size: 44px; font-weight: 800; fill: #1e40af;
-    letter-spacing: 0.04em; pointer-events: none; text-transform: uppercase;
-    paint-order: stroke; stroke: #ffffff; stroke-width: 6; stroke-linejoin: round;
+    font-family: var(--niche-font-section);
+    font-size: 44px; font-weight: 600; fill: var(--niche-dark-green);
+    letter-spacing: 0.10em; pointer-events: none; text-transform: uppercase;
   }
   /* scrollbar */
   aside::-webkit-scrollbar { width: 6px; }
-  aside::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+  aside::-webkit-scrollbar-thumb { background: var(--niche-cream-edge); border-radius: 3px; }
 </style>
 </head>
 <body>
@@ -269,20 +327,17 @@
 
     <div class="control-group">
       <h3>Journey Stage</h3>
-      <button class="stage-btn active" data-stage="all">
-        <span class="dot" style="background: #9ca3af"></span> All stages
-      </button>
       <button class="stage-btn" data-stage="Prospect">
-        <span class="dot" style="background: #f59e0b"></span> Prospect
+        <span class="dot" style="background: var(--niche-amber)"></span> Prospect
       </button>
       <button class="stage-btn" data-stage="Applied">
-        <span class="dot" style="background: #10b981"></span> Applied
+        <span class="dot" style="background: var(--niche-bright-green)"></span> Applied
       </button>
       <button class="stage-btn" data-stage="Admitted">
-        <span class="dot" style="background: #3b82f6"></span> Admitted
+        <span class="dot" style="background: var(--niche-periwinkle)"></span> Admitted
       </button>
       <button class="stage-btn" data-stage="Attending">
-        <span class="dot" style="background: #8b5cf6"></span> Attending
+        <span class="dot" style="background: var(--niche-pink)"></span> Attending
       </button>
     </div>
 
@@ -295,17 +350,17 @@
       <h3>Node Types</h3>
       <label class="filter-row">
         <input type="checkbox" data-type="person" checked>
-        <span class="swatch" style="background: #c4b5fd"></span>
+        <span class="swatch" style="background: var(--niche-periwinkle)"></span>
         <span>Person / Team</span>
       </label>
       <label class="filter-row">
         <input type="checkbox" data-type="system" checked>
-        <span class="swatch" style="background: #fdba74"></span>
+        <span class="swatch" style="background: var(--niche-amber)"></span>
         <span>System</span>
       </label>
       <label class="filter-row">
         <input type="checkbox" data-type="touchpoint" checked>
-        <span class="swatch" style="background: #93c5fd"></span>
+        <span class="swatch" style="background: var(--niche-pink)"></span>
         <span>Touchpoint</span>
       </label>
     </div>
@@ -356,9 +411,9 @@ const RINGS = [
 ];
 
 const TYPE_COLOR = {
-  person:      "#c4b5fd",
-  system:      "#fdba74",
-  touchpoint:  "#93c5fd"
+  person:      "#8CA6FF", // Niche Periwinkle
+  system:      "#FF9B00", // Niche Amber
+  touchpoint:  "#FF90E7"  // Niche Pink
 };
 
 // FigJam coordinates (x,y are top-left; we compute center)
@@ -790,14 +845,14 @@ const NODE_QUOTES = {
 const RIBBONS = [
   {
     id: "outreach_ribbon",
-    label: "Direct outreach from admissions staff",
+    label: "Direct outreach",
     subLabel: "Begins after a name is purchased, continues until the student arrives on campus",
     startScreenAngle: -60,
     endScreenAngle: 240,
     innerRadius: 2960,
     outerRadius: 3100,
-    color: "#3b82f6",
-    opacity: 0.32,
+    color: "#016853", // Niche Medium Green
+    opacity: 0.28,
     cycleLabels: [
       { atScreenAngle: -30, text: "Inquiry cultivation" },
       { atScreenAngle:  45, text: "Application push" },
@@ -851,7 +906,8 @@ const svg = d3.select("#viz");
 const defs = svg.append("defs");
 
 // Arrow markers
-["#9ca3af","#4f46e5","#d1d5db"].forEach((color, i) => {
+// Arrow marker colors: 0=default (medium green), 1=highlight (bright green), 2=dim (cream edge)
+["#016853","#00BE76","#E5DCD5"].forEach((color, i) => {
   defs.append("marker")
     .attr("id", "arrow-" + i)
     .attr("viewBox", "0 -5 10 10")
@@ -923,16 +979,14 @@ const ribbonSels = ribbonsLayer.selectAll("path.ribbon-path")
   .on("mouseover", (e, d) => showTooltip(e, d.label + " — " + d.subLabel))
   .on("mouseout", hideTooltip);
 
-// --- Ribbon labels: run inside the ribbon band starting at the ribbon's start point,
-// following the curve of the ribbon for readability.
+// --- Ribbon labels: every label rides the ribbon's centerline arc so they sit
+// inside the band. The main label and the cycle labels share the same midline
+// path but are placed at different startOffsets.
 RIBBONS.forEach((rib, idx) => {
-  // Draw the label along a short arc segment matching the ribbon's curve at the start.
-  // Segment runs from startScreenAngle forward (clockwise) by ~100°, enough to fit the label.
-  const labelSpan = 95; // degrees to sweep for the label path
   const startDeg = rib.startScreenAngle;
-  const endDeg = startDeg + labelSpan;
-  const labelR = (rib.innerRadius + rib.outerRadius) / 2;
-  const sublabelR = labelR + 40;  // sub-label runs on a slightly outer arc
+  const endDeg = rib.endScreenAngle;
+  const totalSpan = endDeg - startDeg; // degrees the ribbon covers
+  const midR = (rib.innerRadius + rib.outerRadius) / 2;
 
   const makeArcPath = (r, fromDeg, toDeg) => {
     const a1 = fromDeg * Math.PI / 180;
@@ -944,38 +998,68 @@ RIBBONS.forEach((rib, idx) => {
     return `M ${sx} ${sy} A ${r} ${r} 0 ${largeArc} ${sweep} ${ex} ${ey}`;
   };
 
-  const mainPathId = "ribbon-label-path-" + idx;
-  const subPathId  = "ribbon-sublabel-path-" + idx;
-  defs.append("path").attr("id", mainPathId).attr("d", makeArcPath(labelR, startDeg, endDeg));
-  defs.append("path").attr("id", subPathId).attr("d", makeArcPath(sublabelR, startDeg, endDeg));
+  // One full-arc path along the ribbon's centerline, used by every label.
+  const midPathId = "ribbon-midline-path-" + idx;
+  defs.append("path").attr("id", midPathId).attr("d", makeArcPath(midR, startDeg, endDeg));
 
-  // Main label — anchored at start of arc (inside the ribbon, right at 2 o'clock).
+  // Helper: convert a screen angle on the ribbon to a startOffset percentage along
+  // the midline path.
+  const angleToOffset = (deg) => ((deg - startDeg) / totalSpan) * 100;
+
+  // --- Main label "Direct outreach" — anchored to the START of the ribbon so
+  //     the first letter sits just past the ribbon's starting edge.
   ribbonLabelsLayer.append("text")
     .attr("class", "ribbon-label")
-    .attr("dy", -8)
+    .attr("dominant-baseline", "central")
     .append("textPath")
-    .attr("href", "#" + mainPathId)
-    .attr("startOffset", "3%")
+    .attr("href", "#" + midPathId)
+    .attr("startOffset", "1%")
     .attr("text-anchor", "start")
     .text(rib.label);
 
-  // (sub-label intentionally omitted)
-
-  // Cycle labels: anchored at a point on the ribbon's mid-radius and rendered
-  // UPRIGHT (no rotation) regardless of where on the arc they fall.
+  // --- Cycle labels: each rides the ribbon's centerline.
+  //     Labels on the BOTTOM half of the arc (sin θ > 0 in SVG screen coords)
+  //     would render upside-down on the forward (clockwise) path. For those,
+  //     we build a short COUNTERCLOCKWISE arc segment so the text reads
+  //     right-side up while still curving inside the ribbon band.
   if (rib.cycleLabels && rib.cycleLabels.length) {
-    const cycleR = (rib.innerRadius + rib.outerRadius) / 2;
-    rib.cycleLabels.forEach((cl) => {
-      const rad = cl.atScreenAngle * Math.PI / 180;
-      const px = Math.cos(rad) * cycleR;
-      const py = Math.sin(rad) * cycleR;
-      ribbonLabelsLayer.append("text")
-        .attr("class", "ribbon-cycle-label")
-        .attr("x", px)
-        .attr("y", py)
-        .attr("text-anchor", "middle")
-        .attr("dominant-baseline", "middle")
-        .text(cl.text);
+    rib.cycleLabels.forEach((cl, ci) => {
+      const θ = cl.atScreenAngle;
+      const isBottomHalf = Math.sin(θ * Math.PI / 180) > 0;
+
+      if (isBottomHalf) {
+        // Reverse arc segment, ±35° around θ, drawn CCW (sweep flag 0).
+        const segStart = θ + 35;
+        const segEnd   = θ - 35;
+        const a1 = segStart * Math.PI / 180;
+        const a2 = segEnd   * Math.PI / 180;
+        const sx = Math.cos(a1) * midR, sy = Math.sin(a1) * midR;
+        const ex = Math.cos(a2) * midR, ey = Math.sin(a2) * midR;
+        const segPathId = "ribbon-cycle-rev-" + idx + "-" + ci;
+        defs.append("path")
+          .attr("id", segPathId)
+          .attr("d", `M ${sx} ${sy} A ${midR} ${midR} 0 0 0 ${ex} ${ey}`);
+
+        ribbonLabelsLayer.append("text")
+          .attr("class", "ribbon-cycle-label")
+          .attr("dominant-baseline", "central")
+          .append("textPath")
+          .attr("href", "#" + segPathId)
+          .attr("startOffset", "50%")
+          .attr("text-anchor", "middle")
+          .text(cl.text);
+      } else {
+        // Top-half labels can ride the forward (clockwise) midline path.
+        const offsetPct = angleToOffset(θ);
+        ribbonLabelsLayer.append("text")
+          .attr("class", "ribbon-cycle-label")
+          .attr("dominant-baseline", "central")
+          .append("textPath")
+          .attr("href", "#" + midPathId)
+          .attr("startOffset", offsetPct + "%")
+          .attr("text-anchor", "middle")
+          .text(cl.text);
+      }
     });
   }
 });
@@ -997,21 +1081,24 @@ const ringSels = ringsLayer.selectAll("circle.ring-bg")
   .on("mouseout", hideTooltip);
 
 // --- Ring labels
+// Pin each label to a consistent 30-unit gap below the inside-top of its ring,
+// using dominant-baseline="hanging" so the y attr defines the TOP of the text.
 RINGS.forEach(r => {
   ringLabelsLayer.append("text")
     .attr("class", "ring-label")
     .attr("x", 0)
-    .attr("y", -r.radius + 80)
+    .attr("y", -r.radius + 30)
     .attr("text-anchor", "middle")
+    .attr("dominant-baseline", "hanging")
     .text(r.name);
 });
 
 // --- Stage quadrant labels (outside the rings)
 const STAGES = [
-  { name: "Prospect",  angle: -45,  color: "#f59e0b" },
-  { name: "Applied",   angle: 45,   color: "#10b981" },
-  { name: "Admitted",  angle: 135,  color: "#3b82f6" },
-  { name: "Attending", angle: -135, color: "#8b5cf6" }
+  { name: "Prospect",  angle: -45,  color: "#FF9B00" }, // Niche Amber
+  { name: "Applied",   angle: 45,   color: "#00BE76" }, // Niche Bright Green
+  { name: "Admitted",  angle: 135,  color: "#8CA6FF" }, // Niche Periwinkle
+  { name: "Attending", angle: -135, color: "#FF90E7" }  // Niche Pink
 ];
 const OUTER_R = RINGS[3].radius + 400;
 STAGES.forEach(s => {
@@ -1073,7 +1160,7 @@ function renderEdges(edges) {
   edgeSel.exit().remove();
   const entering = edgeSel.enter().append("path")
     .attr("class", d => "edge " + d.style)
-    .attr("stroke", "#9ca3af")
+    .attr("stroke", "#016853") // Niche Medium Green
     .attr("fill", "none")
     .attr("marker-end", d => d.bidirectional ? "url(#arrow-0)" : (d.reverse ? null : "url(#arrow-0)"))
     .attr("marker-start", d => d.bidirectional ? "url(#arrow-0)" : (d.reverse ? "url(#arrow-0)" : null))
@@ -1341,7 +1428,7 @@ function applyStageHighlight() {
   stageHighlightLayer.append("path")
     .attr("class", "stage-highlight")
     .attr("d", arcGen())
-    .attr("fill", "#bbf7d0");
+    .attr("fill", "#C8F1DD"); // Niche Bright Green tint
 }
 
 function updateMaturityDesc() {
@@ -1351,32 +1438,32 @@ function updateMaturityDesc() {
 function updateRingList() {
   const container = document.getElementById("ring-list");
   container.innerHTML = "";
-  // Add "None" option to deselect
-  const noneRow = document.createElement("label");
-  noneRow.className = "filter-row ring-row";
-  noneRow.innerHTML = `
-    <input type="radio" name="ring-select" value="-1" ${state.selectedRing === null ? "checked" : ""}>
-    <span>None</span>
-  `;
-  noneRow.querySelector("input").addEventListener("change", () => {
-    state.selectedNode = null;
-    state.selectedRibbon = null;
-    state.selectedRing = null;
-    applySelection();
-    clearSelection();
-  });
-  container.appendChild(noneRow);
 
+  // Click an active ring to deselect — "no selection" means no ring is highlighted.
   RINGS.forEach(r => {
     const row = document.createElement("label");
     row.className = "filter-row ring-row";
+    const isSelected = state.selectedRing === r.id;
     row.innerHTML = `
-      <input type="radio" name="ring-select" value="${r.id}" ${state.selectedRing === r.id ? "checked" : ""}>
+      <input type="radio" name="ring-select" value="${r.id}" ${isSelected ? "checked" : ""}>
       <span>${r.name}</span>
     `;
-    row.querySelector("input").addEventListener("change", () => {
-      onRingClick(r.id);
-      updateRingList(); // re-render to sync radio state
+    const input = row.querySelector("input");
+    // Use click so we can detect re-clicks. At click-time, state.selectedRing
+    // still holds the previous selection — compare to know whether to toggle off.
+    input.addEventListener("click", () => {
+      if (state.selectedRing === r.id) {
+        input.checked = false;
+        state.selectedNode = null;
+        state.selectedRibbon = null;
+        state.selectedRing = null;
+        applySelection();
+        clearSelection();
+        updateRingList();
+      } else {
+        onRingClick(r.id);
+        updateRingList();
+      }
     });
     container.appendChild(row);
   });
@@ -1662,7 +1749,9 @@ function setStage(stageName) {
 
 document.querySelectorAll(".stage-btn").forEach(btn => {
   btn.addEventListener("click", () => {
-    setStage(btn.dataset.stage);
+    const stageName = btn.dataset.stage;
+    // Click an active stage to deselect — "no selection" === all stages.
+    setStage(state.stage === stageName ? "all" : stageName);
   });
 });
 
